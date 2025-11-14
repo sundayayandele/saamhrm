@@ -1,0 +1,45 @@
+Phase,Task ID,Task Description,Owner,Priority,Status,Est. Duration (days),Comments
+0 – Foundation,0.1,Define regions hostnames and DNS zones (Prod A Prod B Non-prod),Infra,High,Not started,1,Document in docs/architecture.md
+0 – Foundation,0.2,Create Git repo for infra and apps (infra-ssdnodes apps-platform),Infra,High,Not started,0.5,GitLab CE or GitHub
+0 – Foundation,0.3,Provision one test VPS and configure SSH firewall sudo,Infra,High,Not started,1,Use same OS image as final clusters
+1 – K8s & Traefik,1.1,Provision 3-node K8s/K3s cluster in Region A,Infra,High,Not started,2,Master + 2 workers or HA control plane
+1 – K8s & Traefik,1.2,Provision 3-node K8s/K3s cluster in Region B,Infra,High,Not started,2,Mirror of Region A
+1 – K8s & Traefik,1.3,Install Traefik Ingress in Region A with Let's Encrypt enabled,Infra,High,Not started,1,Use DNS or HTTP challenge
+1 – K8s & Traefik,1.4,Install Traefik Ingress in Region B with Let's Encrypt enabled,Infra,High,Not started,1,Same config different domains
+1 – K8s & Traefik,1.5,Deploy test app behind Traefik in Region A and validate HTTPS,DevOps,Medium,Not started,0.5,Simple hello service
+1 – K8s & Traefik,1.6,Deploy Prometheus + Alertmanager + Grafana in Region A,DevOps,High,Not started,2,Use kube-prometheus-stack Helm chart
+1 – K8s & Traefik,1.7,Deploy Prometheus + Alertmanager + Grafana in Region B,DevOps,Medium,Not started,2,Same chart & values with overrides
+2 – DB & Backup,2.1,Install Postgres operator (PGO/Patroni) in Region A,DevOps,High,Not started,1,Choose operator and pin version
+2 – DB & Backup,2.2,Deploy Postgres HA cluster (1 primary 2 replicas) in Region A,DevOps,High,Not started,2,With PersistentVolumes on SSD
+2 – DB & Backup,2.3,Deploy MinIO cluster in Region A for backups & snapshots,DevOps,High,Not started,1.5,Expose S3 endpoint internally
+2 – DB & Backup,2.4,Configure Postgres backups (pgBackRest / wal-g) to MinIO (A),DevOps,High,Not started,1.5,Test backup + restore
+2 – DB & Backup,2.5,Install Velero in Region A and configure MinIO backup target,DevOps,Medium,Not started,1,Backup test namespace
+2 – DB & Backup,2.6,Repeat Postgres + MinIO + Velero setup for Region B,DevOps,Medium,Not started,3,Can be automated later
+3 – Kafka & OpenSearch,3.1,Deploy Kafka cluster (3 brokers) in Region A (Strimzi/Helm),DevOps,High,Not started,2,Use persistent storage
+3 – Kafka & OpenSearch,3.2,Deploy Kafka Connect cluster in Region A,DevOps,Medium,Not started,1,Externalized configs in Git
+3 – Kafka & OpenSearch,3.3,Deploy OpenSearch cluster (3 data nodes) in Region A,DevOps,High,Not started,2,Configure JVM & heap
+3 – Kafka & OpenSearch,3.4,Configure OpenSearch snapshot repo to MinIO (A),DevOps,Medium,Not started,0.5,Test snapshot/restore
+3 – Kafka & OpenSearch,3.5,Configure Debezium Postgres connector into Kafka in Region A,DevOps,High,Not started,1.5,Topics per business table
+3 – Kafka & OpenSearch,3.6,Configure OpenSearch sink connector topics -> indices,DevOps,High,Not started,1.5,Define mappings & index patterns
+3 – Kafka & OpenSearch,3.7,Verify end-to-end CDC: Postgres change -> Kafka -> OpenSearch,DevOps,High,Not started,1,Use test table first
+4 – App Migration,4.1,Containerize SaamHRM / SaamHCM (Dockerfile + K8s manifests/Helm),Dev,High,Not started,3-5,Include config via Secrets/ConfigMaps
+4 – App Migration,4.2,Containerize DORA portal,Dev,Medium,Not started,3-5,Same pattern
+4 – App Migration,4.3,Create Helm charts / Kustomize for core apps,DevOps,High,Not started,3,Separate values per env
+4 – App Migration,4.4,Deploy SaamHRM to Region A with Postgres backend,DevOps,High,Not started,2,Blue/green deployment
+4 – App Migration,4.5,Integrate SaamHRM read/search screens with OpenSearch,Dev,Medium,Not started,3,Use indices from Kafka pipeline
+4 – App Migration,4.6,Deploy DORA portal to Region A,DevOps,Medium,Not started,2,Route via Traefik
+4 – App Migration,4.7,Define Non-prod namespaces (Dev/Test/ACC) and CI/CD pipeline,DevOps,High,Not started,3,GitOps preferred (ArgoCD/Flux)
+5 – Multi-region & DR,5.1,Replicate Postgres (async) from Region A -> B,DevOps,High,Not started,2,Logical replication or DR cluster
+5 – Multi-region & DR,5.2,Deploy Kafka + OpenSearch stack in Region B (optional),DevOps,Medium,Not started,4,Mirror of Region A
+5 – Multi-region & DR,5.3,Configure Kafka MirrorMaker 2 A <-> B (critical topics),DevOps,Medium,Not started,2,Cross-region replication
+5 – Multi-region & DR,5.4,Configure OpenSearch CCR between A and B (if needed),DevOps,Medium,Not started,2,For global search availability
+5 – Multi-region & DR,5.5,Set up global DNS health checks and failover logic,Infra,High,Not started,2,Cloudflare or similar
+5 – Multi-region & DR,5.6,Run failover test: simulate Region A outage,Infra,High,Not started,1,Capture lessons learned
+6 – Control Panel,6.1,Provision VM for Virtualmin/CyberPanel in Region A,Infra,Low,Not started,1,For classic hosting/mail
+6 – Control Panel,6.2,Install Virtualmin Pro or CyberPanel and configure domains,Infra,Low,Not started,2,Marketing sites mail
+6 – Control Panel,6.3,Integrate panel DNS with K8s DNS model (if required),Infra,Low,Not started,1.5,Or use DNS provider directly
+7 – Hardening & Compliance,7.1,Implement NetworkPolicies and PodSecurity/Kyverno policies,DevOps,High,Not started,3,Namespace-by-namespace rollout
+7 – Hardening & Compliance,7.2,Introduce central secrets management (Vault / External Secrets),DevOps,Medium,Not started,3,Rotate existing secrets
+7 – Hardening & Compliance,7.3,Harden Traefik (timeouts headers rate limits),DevOps,Medium,Not started,2,OWASP-style headers
+7 – Hardening & Compliance,7.4,Tune Postgres Kafka and OpenSearch for production workloads,DevOps,Medium,Not started,4,Use metrics from Prometheus
+7 – Hardening & Compliance,7.5,Document DR/BCP runbooks and RTO/RPO targets,Architecture,Medium,Not started,3,For audits (SOC2/GDPR/NDPB)
