@@ -1,3 +1,6 @@
+High-level multi-region architecture
+
+
 flowchart LR
     subgraph DNS[Global DNS / Anycast DNS]
         HC[Health checks & failover]
